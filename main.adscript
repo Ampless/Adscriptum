@@ -5,7 +5,7 @@
 ;;(def SDL_WINDOWPOS_UNDEFINED)
 (defn puts [char* s] int)
 
-(def App '(int* renderer int* window))
+(deft App '(int* renderer int* window))
 
 (defn initsdl [] App
   (let app App)
