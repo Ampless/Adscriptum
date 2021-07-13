@@ -25,16 +25,23 @@ carp -x main.carp
 ### Apple silicon
 On ARM64 macOS the GHC Haskell ecosystem is still a mess as of mid 2021. For that reason
 you will have to install the AMD64 versions of Stack and Carp, which complicates the
-linking, because `carp` tries to use `pkg-config`. For that reason you will have to create
-a dummy `pkg-config` to point to the Homebrew Intel installation of SDL2:
+linking, because `carp` tries to use `pkg-config`. For that reason you will have to get it
+to use the packages from Homebrew Intel. This can be achieved in two ways: Create
+a dummy `pkg-config` pointing to the x86 installation of SDL2:
 
 ```sh
 #!/bin/sh
-echo -D_THREAD_SAFE -I/usr/local/include -L/usr/local/lib -lSDL2
+echo -D_THREAD_SAFE -I/usr/local/include -L/usr/local/lib -lSDL2 -lSDL2_ttf
 ```
 
 Then you can weld your `PATH` a bit to get it working:
 
 ```sh
 PATH="$PWD:$PATH" carp -x main.carp
+```
+
+Or just try using the x86 `pkg-config` by welding your `PATH` directly:
+
+``` sh
+PATH="/usr/local/bin:$PATH" carp -x main.carp
 ```
