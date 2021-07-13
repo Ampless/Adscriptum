@@ -1,11 +1,20 @@
 (load-and-use SDL)
+(load-and-use SDL_ttf)
+
+(def font (the (Ptr TTF_Font) NULL))
+(def text-img (the (Ptr SDL_Texture) NULL))
 
 (defn tick [state]
   (+ state 10))
 
-(defn draw [app rend state]
-  (bg rend &(rgb (/ @state 2) (/ @state 3) (/ @state 4))))
+(defn draw [app rend state] (do
+  (SDL.bg rend &(rgb 200 200 200))
+  (draw-texture-centered rend text-img &(point 100 100))))
 
 (defn main []
-  (let [app (SDLApp.create "Adscriptum" 400 300) state 0]
-    (SDLApp.run-with-callbacks &app SDLApp.quit-on-esc tick draw state)))
+  (let [app (SDLApp.create "Adscriptum" 400 300) state 0 rend @(SDLApp.renderer &app)] (do
+    (when (not (TTF.ok? (TTF.init))) (do (println* "Can't init SDL/TTF: " &(from-cstr (TTF.get-error))) (exit 1)))
+    (set! font (TTF.open-font (cstr "../Library/Fonts/unifont-13.0.06.ttf") 20))
+    (when (= font NULL) (do (println* "Can't load font: " &(from-cstr (TTF.get-error))) (exit 1)))
+    (set! text-img (TTF.render-text-to-texture rend font "Adscriptum" (rgb 0 0 0)))
+    (SDLApp.run-with-callbacks &app SDLApp.quit-on-esc tick draw state))))
